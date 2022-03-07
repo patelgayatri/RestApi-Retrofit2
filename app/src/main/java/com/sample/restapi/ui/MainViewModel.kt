@@ -1,34 +1,25 @@
 package com.sample.restapi.ui
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.sample.restapi.data.models.TvShowItem
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import com.sample.restapi.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: MainRepository): ViewModel() {
+class MainViewModel @Inject constructor(private val repository: MainRepository) : ViewModel() {
 
-    private var _tvShow = MutableLiveData<List<TvShowItem>>()
-    val tvShow : LiveData<List<TvShowItem>> =_tvShow
-
-    init {
-        getAllTvShows()
+    val loader = MutableLiveData<Boolean>()
+    
+    val playlists = liveData {
+        loader.postValue(true)
+        emitSource(repository.getTvShow()
+            .onEach {
+                loader.postValue(false)
+            }.asLiveData()
+        )
     }
-
-    private fun getAllTvShows() {
-       viewModelScope.launch {
-           repository.getTvShow().let {
-               if(it.isSuccessful)
-                   _tvShow.postValue(it.body())
-               else
-                   println("===="+it.code())
-           }
-       }
-    }
-
 }

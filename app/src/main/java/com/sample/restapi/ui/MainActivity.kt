@@ -1,7 +1,9 @@
 package com.sample.restapi.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sample.restapi.databinding.ActivityMainBinding
@@ -23,8 +25,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun showData() {
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.tvShow.observe(this) {
-            myAdapter.tvShows = it
+
+        viewModel.loader.observe(this as LifecycleOwner) { loading ->
+            when (loading) {
+                true -> binding.loader.visibility = View.VISIBLE
+                else -> binding.loader.visibility = View.GONE
+            }
+        }
+        viewModel.playlists.observe(this) {
+            myAdapter.tvShows = it.getOrNull()!!
         }
     }
 

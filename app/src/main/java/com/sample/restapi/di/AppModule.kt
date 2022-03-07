@@ -1,6 +1,6 @@
 package com.sample.restapi.di
 
-import com.sample.restapi.data.network.ApiService
+import com.sample.restapi.data.network.TvShowApi
 import com.sample.restapi.utils.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -16,11 +16,11 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun retrofitInstance(): ApiService {
+    fun retrofitInstance(): TvShowApi {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
+            .create(TvShowApi::class.java)
     }
 }
